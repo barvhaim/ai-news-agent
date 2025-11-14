@@ -1,0 +1,16 @@
+[project]
+name = "ai-news-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11.13"
+dependencies = [
+    "beeai-framework>=0.1.66",
+    "chainlit>=2.9.0",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25.11.0",
+    "pylint>=4.0.3",
+]
