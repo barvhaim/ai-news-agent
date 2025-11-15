@@ -11,6 +11,7 @@ from beeai_framework.memory import TokenMemory
 from beeai_framework.tools import AnyTool
 from src.ai_news_agent.tools.huggingface_papers import HuggingFacePapersTool
 from src.ai_news_agent.tools.huggingface_spaces import HuggingFaceSpacesTool
+from src.ai_news_agent.tools.hacker_news import HackerNewsTool
 
 
 load_dotenv()
@@ -18,7 +19,7 @@ load_dotenv()
 
 def _get_llm():
     llm = ChatModel.from_name(
-        f'openai:{os.getenv("OPENAI_CHAT_MODEL")}',
+        os.getenv("LLM_MODEL_NAME"),
         ChatModelParameters(temperature=0),
     )
 
@@ -30,6 +31,7 @@ def _create_agent():
     tools: list[AnyTool] = [
         HuggingFacePapersTool(),
         HuggingFaceSpacesTool(),
+        HackerNewsTool(),
     ]
     agent = ReActAgent(llm=llm, tools=tools, memory=TokenMemory(llm))
     return agent
@@ -40,15 +42,15 @@ async def set_starters():
     return [
         cl.Starter(
             label="Top Trending Papers",
-            message="What are the top 5 trending AI papers today?",
+            message="What are the top 5 trending AI papers today? Include the title, brief summary and link to the paper.",
         ),
         cl.Starter(
             label="Popular Spaces",
-            message="Show me the most popular Hugging Face Spaces right now",
+            message="Show me the most popular Hugging Face Spaces right now? include the name and link to the space.",
         ),
         cl.Starter(
-            label="LLM Research",
-            message="What are the latest papers about large language models?",
+            label="Hacker News AI",
+            message="What are the latest AI stories on Hacker News?",
         ),
     ]
 
