@@ -73,7 +73,7 @@ class HackerNewsTool(Tool[HackerNewsToolInput, ToolRunOptions, JSONToolOutput[di
             creator=self,
         )
 
-    async def _run(
+    async def _run(  # pylint: disable=arguments-renamed
         self,
         input_data: HackerNewsToolInput,
         options: ToolRunOptions | None,
@@ -100,7 +100,7 @@ class HackerNewsTool(Tool[HackerNewsToolInput, ToolRunOptions, JSONToolOutput[di
         tool.description = self.description
         tool.input_schema = self.input_schema
         tool.middlewares.extend(self.middlewares)
-        tool._cache = await self.cache.clone()
+        tool._cache = await self.cache.clone()  # pylint: disable=protected-access
         return tool
 
     @staticmethod

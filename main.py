@@ -12,6 +12,7 @@ from beeai_framework.tools import AnyTool
 from src.ai_news_agent.tools.huggingface_papers import HuggingFacePapersTool
 from src.ai_news_agent.tools.huggingface_spaces import HuggingFaceSpacesTool
 from src.ai_news_agent.tools.hacker_news import HackerNewsTool
+from src.ai_news_agent.tools.arxiv import ArxivTool
 
 
 load_dotenv()
@@ -32,6 +33,7 @@ def _create_agent():
         HuggingFacePapersTool(),
         HuggingFaceSpacesTool(),
         HackerNewsTool(),
+        ArxivTool(),
     ]
     agent = ReActAgent(llm=llm, tools=tools, memory=TokenMemory(llm))
     return agent
@@ -42,15 +44,19 @@ async def set_starters():
     return [
         cl.Starter(
             label="Top Trending Papers",
-            message="What are the top 5 trending AI papers today? Include the title, brief summary and link to the paper.",
+            message="What are the top trending AI papers today? Include the title, brief summary and link to the paper.",
         ),
         cl.Starter(
             label="Popular Spaces",
             message="Show me the most popular Hugging Face Spaces right now? include the name and link to the space.",
         ),
         cl.Starter(
-            label="Hacker News AI",
+            label="Latest AI Stories",
             message="What are the latest AI stories on Hacker News?",
+        ),
+        cl.Starter(
+            label="Recent arXiv AI Papers",
+            message="What are the latest AI papers on arXiv? Include the title, brief summary and link to the paper.",
         ),
     ]
 

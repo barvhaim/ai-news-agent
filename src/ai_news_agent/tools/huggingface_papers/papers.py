@@ -89,7 +89,7 @@ class HuggingFacePapersTool(
             except Exception as e:
                 raise ToolError(f"Unexpected error fetching papers: {str(e)}") from e
 
-    async def _run(
+    async def _run(  # pylint: disable=arguments-renamed
         self,
         input_data: HuggingFacePapersToolInput,
         options: ToolRunOptions | None,
@@ -106,5 +106,5 @@ class HuggingFacePapersTool(
         tool.description = self.description
         tool.input_schema = self.input_schema
         tool.middlewares.extend(self.middlewares)
-        tool._cache = await self.cache.clone()
+        tool._cache = await self.cache.clone()  # pylint: disable=protected-access
         return tool
