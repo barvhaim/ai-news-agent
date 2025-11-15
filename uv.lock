@@ -10,7 +10,7 @@ resolution-markers = [
 [[package]]
 name = "ai-news-agent"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "beeai-framework" },
     { name = "chainlit" },
