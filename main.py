@@ -3,7 +3,7 @@ from typing import Any
 import chainlit as cl
 from dotenv import load_dotenv
 from beeai_framework.agents.react import ReActAgent
-from beeai_framework.adapters.openai import OpenAIChatModel
+from beeai_framework.backend import ChatModel, ChatModelParameters
 from beeai_framework.errors import FrameworkError
 from beeai_framework.emitter import EmitterOptions, EventMeta
 from beeai_framework.memory import TokenMemory
@@ -14,12 +14,10 @@ from beeai_framework.tools.weather import OpenMeteoTool
 load_dotenv()
 
 def _get_llm():
-    llm = OpenAIChatModel(
-        model_id=os.getenv("OPENAI_CHAT_MODEL"),
-        api_key=os.getenv("OPENAI_API_KEY"),
-        base_url=os.getenv("OPENAI_API_BASE"),
+    llm = ChatModel.from_name(
+        f'openai:{os.getenv("OPENAI_CHAT_MODEL")}',
+        ChatModelParameters(temperature=0),
     )
-    llm.parameters.temperature = 0
     return llm
 
 def _create_agent():
