@@ -1,14 +1,25 @@
-# Welcome to Chainlit! 🚀🤖
+# AI-News Assistant
 
-Hi there, Developer! 👋 We're excited to have you on board. Chainlit is a powerful tool designed to help you prototype, debug and share applications built on top of LLMs.
+Welcome! I'm your AI-powered assistant for staying up-to-date with the latest in AI and machine learning.
 
-## Useful Links 🔗
+## What I Can Do
 
-- **Documentation:** Get started with our comprehensive [Chainlit Documentation](https://docs.chainlit.io) 📚
-- **Discord Community:** Join our friendly [Chainlit Discord](https://discord.gg/k73SQ3FyUh) to ask questions, share your projects, and connect with other developers! 💬
+I can help you discover and explore:
 
-We can't wait to see what you create with Chainlit! Happy coding! 💻😊
+- **Trending AI Papers** - Daily trending research papers from Hugging Face with AI-generated summaries, keywords, and community engagement metrics
+- **Popular AI Spaces** - Interactive demos and applications from the Hugging Face community, sorted by trending score
 
-## Welcome screen
+## How to Use
 
-To modify the welcome screen, edit the `chainlit.md` file at the root of your project. If you do not want a welcome screen, just leave this file empty.
+Simply ask me questions like:
+- "What are the top 5 trending AI papers today?"
+- "Show me the most popular Hugging Face Spaces"
+- "Find papers about large language models"
+- "Show me recent computer vision papers and demos"
+
+I use advanced reasoning to understand your questions and fetch the most relevant information from Hugging Face.
+
+## Powered By
+
+- **BeeAI Framework** - ReActAgent architecture for intelligent task planning
+- **Hugging Face** - Daily papers and trending spaces data

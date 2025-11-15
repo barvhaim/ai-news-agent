@@ -9,7 +9,6 @@ from beeai_framework.errors import FrameworkError
 from beeai_framework.emitter import EmitterOptions, EventMeta
 from beeai_framework.memory import TokenMemory
 from beeai_framework.tools import AnyTool
-from beeai_framework.tools.weather import OpenMeteoTool
 from src.ai_news_agent.tools.huggingface_papers import HuggingFacePapersTool
 from src.ai_news_agent.tools.huggingface_spaces import HuggingFaceSpacesTool
 
@@ -29,7 +28,6 @@ def _get_llm():
 def _create_agent():
     llm = _get_llm()
     tools: list[AnyTool] = [
-        OpenMeteoTool(),
         HuggingFacePapersTool(),
         HuggingFaceSpacesTool(),
     ]
@@ -41,8 +39,16 @@ def _create_agent():
 async def set_starters():
     return [
         cl.Starter(
-            label="Weather in Sderot",
-            message="What's the weather like in Sderot today?",
+            label="Top Trending Papers",
+            message="What are the top 5 trending AI papers today?",
+        ),
+        cl.Starter(
+            label="Popular Spaces",
+            message="Show me the most popular Hugging Face Spaces right now",
+        ),
+        cl.Starter(
+            label="LLM Research",
+            message="What are the latest papers about large language models?",
         ),
     ]
 
