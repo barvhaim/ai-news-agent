@@ -7,6 +7,7 @@ requires-python = ">=3.11.13"
 dependencies = [
     "beeai-framework>=0.1.66",
     "chainlit>=2.9.0",
+    "python-dotenv>=1.2.1",
 ]
 
 [dependency-groups]

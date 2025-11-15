@@ -1,7 +1,9 @@
+import os
 from typing import Any
 import chainlit as cl
+from dotenv import load_dotenv
 from beeai_framework.agents.react import ReActAgent
-from beeai_framework.backend import ChatModel, ChatModelParameters
+from beeai_framework.adapters.openai import OpenAIChatModel
 from beeai_framework.errors import FrameworkError
 from beeai_framework.emitter import EmitterOptions, EventMeta
 from beeai_framework.memory import TokenMemory
@@ -9,11 +11,19 @@ from beeai_framework.tools import AnyTool
 from beeai_framework.tools.weather import OpenMeteoTool
 
 
-def _create_agent():
-    llm = ChatModel.from_name(
-        "ollama:llama3.1:latest",
-        ChatModelParameters(temperature=0),
+load_dotenv()
+
+def _get_llm():
+    llm = OpenAIChatModel(
+        model_id=os.getenv("OPENAI_CHAT_MODEL"),
+        api_key=os.getenv("OPENAI_API_KEY"),
+        base_url=os.getenv("OPENAI_API_BASE"),
     )
+    llm.parameters.temperature = 0
+    return llm
+
+def _create_agent():
+    llm = _get_llm()
     tools: list[AnyTool] = [
         OpenMeteoTool(),
     ]
@@ -78,6 +88,7 @@ async def _process_agent_events(data: Any, event: EventMeta) -> None:
                 async with cl.Step(name=last_tool_used["tool_name"]) as step:
                     step.input = last_tool_used["input"]
                     step.output = last_tool_used["output"]
+                cl.user_session.set("last_tool_used", None)
         else:
             print(f"Agent {data.update.key}: {data.update.parsed_value}")
     elif event.name == "start":

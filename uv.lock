@@ -14,6 +14,7 @@ source = { editable = "." }
 dependencies = [
     { name = "beeai-framework" },
     { name = "chainlit" },
+    { name = "python-dotenv" },
 ]
 
 [package.dev-dependencies]
@@ -26,6 +27,7 @@ dev = [
 requires-dist = [
     { name = "beeai-framework", specifier = ">=0.1.66" },
     { name = "chainlit", specifier = ">=2.9.0" },
+    { name = "python-dotenv", specifier = ">=1.2.1" },
 ]
 
 [package.metadata.requires-dev]
