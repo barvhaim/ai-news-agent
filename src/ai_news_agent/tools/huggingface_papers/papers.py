@@ -1,3 +1,5 @@
+"""Tool for fetching trending AI/ML research papers from Hugging Face Hub."""
+
 import os
 from typing import Any, Self
 
@@ -10,21 +12,23 @@ from pydantic import BaseModel, Field
 
 
 class HuggingFacePapersToolInput(BaseModel):
-    limit: int = Field(
-        description="Maximum number of papers to fetch",
-        default=10,
-        ge=1,
-        le=100
-    )
+    """Input schema for HuggingFace Papers Tool."""
+
+    limit: int = Field(description="Maximum number of papers to fetch", default=10, ge=1, le=100)
 
 
-class HuggingFacePapersTool(Tool[HuggingFacePapersToolInput, ToolRunOptions, JSONToolOutput[dict[str, Any]]]):
+class HuggingFacePapersTool(
+    Tool[HuggingFacePapersToolInput, ToolRunOptions, JSONToolOutput[dict[str, Any]]]
+):
+    """Fetches daily trending papers from Hugging Face Hub with summaries and metrics."""
+
     name = "HuggingFacePapers"
-    description = "Fetch daily trending papers from Hugging Face Hub. Returns recent AI/ML research papers with titles, summaries, authors, GitHub links, and community engagement metrics."
+    description = (
+        "Fetch daily trending papers from Hugging Face Hub. "
+        "Returns recent AI/ML research papers with titles, summaries, "
+        "authors, GitHub links, and community engagement metrics."
+    )
     input_schema = HuggingFacePapersToolInput
-
-    def __init__(self, options: dict[str, Any] | None = None):
-        super().__init__(options)
 
     def _create_emitter(self) -> Emitter:
         """Creates event emitter for tool lifecycle events"""
@@ -39,14 +43,10 @@ class HuggingFacePapersTool(Tool[HuggingFacePapersToolInput, ToolRunOptions, JSO
         url = "https://huggingface.co/api/daily_papers"
 
         async with httpx.AsyncClient(
-            proxy=os.environ.get("BEEAI_HF_PAPERS_TOOL_PROXY"),
-            timeout=30.0
+            proxy=os.environ.get("BEEAI_HF_PAPERS_TOOL_PROXY"), timeout=30.0
         ) as client:
             try:
-                response = await client.get(
-                    url,
-                    headers={"Accept": "application/json"}
-                )
+                response = await client.get(url, headers={"Accept": "application/json"})
                 response.raise_for_status()
                 papers_data = response.json()
 
@@ -72,14 +72,15 @@ class HuggingFacePapersTool(Tool[HuggingFacePapersToolInput, ToolRunOptions, JSO
                         "numComments": item.get("numComments", 0),
                         "githubRepo": paper.get("githubRepo"),
                         "githubStars": paper.get("githubStars"),
-                        "url": f"https://huggingface.co/papers/{paper.get('id')}" if paper.get("id") else None
+                        "url": (
+                            f"https://huggingface.co/papers/{paper.get('id')}"
+                            if paper.get("id")
+                            else None
+                        ),
                     }
                     formatted_papers.append(formatted_paper)
 
-                return {
-                    "papers": formatted_papers,
-                    "total_fetched": len(formatted_papers)
-                }
+                return {"papers": formatted_papers, "total_fetched": len(formatted_papers)}
 
             except httpx.HTTPStatusError as e:
                 raise ToolError(f"HTTP error fetching papers: {e.response.status_code}") from e
@@ -90,12 +91,12 @@ class HuggingFacePapersTool(Tool[HuggingFacePapersToolInput, ToolRunOptions, JSO
 
     async def _run(
         self,
-        input: HuggingFacePapersToolInput,
+        input_data: HuggingFacePapersToolInput,
         options: ToolRunOptions | None,
-        context: RunContext
+        context: RunContext,
     ) -> JSONToolOutput[dict[str, Any]]:
         """Main execution method for the tool"""
-        results = await self._fetch_papers(input.limit)
+        results = await self._fetch_papers(input_data.limit)
         return JSONToolOutput(results)
 
     async def clone(self) -> Self:

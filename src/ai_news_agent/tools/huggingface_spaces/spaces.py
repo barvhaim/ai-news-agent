@@ -1,3 +1,5 @@
+"""Tool for fetching trending Spaces from Hugging Face Hub."""
+
 import os
 from typing import Any, Self
 
@@ -10,21 +12,25 @@ from pydantic import BaseModel, Field
 
 
 class HuggingFaceSpacesToolInput(BaseModel):
+    """Input schema for HuggingFace Spaces Tool."""
+
     limit: int = Field(
-        description="Maximum number of trending spaces to fetch",
-        default=10,
-        ge=1,
-        le=100
+        description="Maximum number of trending spaces to fetch", default=10, ge=1, le=100
     )
 
 
-class HuggingFaceSpacesTool(Tool[HuggingFaceSpacesToolInput, ToolRunOptions, JSONToolOutput[dict[str, Any]]]):
-    name = "HuggingFaceSpaces"
-    description = "Fetch trending spaces from Hugging Face Hub. Returns popular AI/ML demo applications and interactive tools sorted by trending score, including SDK type, likes, and tags."
-    input_schema = HuggingFaceSpacesToolInput
+class HuggingFaceSpacesTool(
+    Tool[HuggingFaceSpacesToolInput, ToolRunOptions, JSONToolOutput[dict[str, Any]]]
+):
+    """Fetches trending Spaces from Hugging Face Hub sorted by popularity."""
 
-    def __init__(self, options: dict[str, Any] | None = None):
-        super().__init__(options)
+    name = "HuggingFaceSpaces"
+    description = (
+        "Fetch trending spaces from Hugging Face Hub. "
+        "Returns popular AI/ML demo applications and interactive tools "
+        "sorted by trending score, including SDK type, likes, and tags."
+    )
+    input_schema = HuggingFaceSpacesToolInput
 
     def _create_emitter(self) -> Emitter:
         """Creates event emitter for tool lifecycle events"""
@@ -39,22 +45,15 @@ class HuggingFaceSpacesTool(Tool[HuggingFaceSpacesToolInput, ToolRunOptions, JSO
         url = "https://huggingface.co/api/spaces"
 
         async with httpx.AsyncClient(
-            proxy=os.environ.get("BEEAI_HF_SPACES_TOOL_PROXY"),
-            timeout=30.0
+            proxy=os.environ.get("BEEAI_HF_SPACES_TOOL_PROXY"), timeout=30.0
         ) as client:
             try:
-                response = await client.get(
-                    url,
-                    headers={"Accept": "application/json"}
-                )
+                response = await client.get(url, headers={"Accept": "application/json"})
                 response.raise_for_status()
                 spaces_data = response.json()
 
                 # Sort by trending score (descending)
-                spaces_data.sort(
-                    key=lambda x: x.get("trendingScore", 0),
-                    reverse=True
-                )
+                spaces_data.sort(key=lambda x: x.get("trendingScore", 0), reverse=True)
 
                 # Limit results
                 spaces_data = spaces_data[:limit]
@@ -70,14 +69,15 @@ class HuggingFaceSpacesTool(Tool[HuggingFaceSpacesToolInput, ToolRunOptions, JSO
                         "tags": space.get("tags", []),
                         "private": space.get("private", False),
                         "createdAt": space.get("createdAt"),
-                        "url": f"https://huggingface.co/spaces/{space.get('id')}" if space.get("id") else None
+                        "url": (
+                            f"https://huggingface.co/spaces/{space.get('id')}"
+                            if space.get("id")
+                            else None
+                        ),
                     }
                     formatted_spaces.append(formatted_space)
 
-                return {
-                    "spaces": formatted_spaces,
-                    "total_fetched": len(formatted_spaces)
-                }
+                return {"spaces": formatted_spaces, "total_fetched": len(formatted_spaces)}
 
             except httpx.HTTPStatusError as e:
                 raise ToolError(f"HTTP error fetching spaces: {e.response.status_code}") from e
@@ -88,12 +88,12 @@ class HuggingFaceSpacesTool(Tool[HuggingFaceSpacesToolInput, ToolRunOptions, JSO
 
     async def _run(
         self,
-        input: HuggingFaceSpacesToolInput,
+        input_data: HuggingFaceSpacesToolInput,
         options: ToolRunOptions | None,
-        context: RunContext
+        context: RunContext,
     ) -> JSONToolOutput[dict[str, Any]]:
         """Main execution method for the tool"""
-        results = await self._fetch_spaces(input.limit)
+        results = await self._fetch_spaces(input_data.limit)
         return JSONToolOutput(results)
 
     async def clone(self) -> Self:
