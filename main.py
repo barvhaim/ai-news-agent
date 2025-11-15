@@ -10,6 +10,8 @@ from beeai_framework.emitter import EmitterOptions, EventMeta
 from beeai_framework.memory import TokenMemory
 from beeai_framework.tools import AnyTool
 from beeai_framework.tools.weather import OpenMeteoTool
+from src.ai_news_agent.tools.huggingface_papers import HuggingFacePapersTool
+from src.ai_news_agent.tools.huggingface_spaces import HuggingFaceSpacesTool
 
 
 load_dotenv()
@@ -28,6 +30,8 @@ def _create_agent():
     llm = _get_llm()
     tools: list[AnyTool] = [
         OpenMeteoTool(),
+        HuggingFacePapersTool(),
+        HuggingFaceSpacesTool(),
     ]
     agent = ReActAgent(llm=llm, tools=tools, memory=TokenMemory(llm))
     return agent
