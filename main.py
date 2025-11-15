@@ -1,5 +1,6 @@
-import os
 from typing import Any
+import os
+import uuid
 import chainlit as cl
 from dotenv import load_dotenv
 from beeai_framework.agents.react import ReActAgent
@@ -13,12 +14,15 @@ from beeai_framework.tools.weather import OpenMeteoTool
 
 load_dotenv()
 
+
 def _get_llm():
     llm = ChatModel.from_name(
         f'openai:{os.getenv("OPENAI_CHAT_MODEL")}',
         ChatModelParameters(temperature=0),
     )
+
     return llm
+
 
 def _create_agent():
     llm = _get_llm()
@@ -42,9 +46,11 @@ async def set_starters():
 @cl.on_chat_start
 def on_chat_start():
     print("A new chat has started.")
-    cl.user_session.set("current_thread", None)
+    thread_id = str(uuid.uuid4())
+    cl.user_session.set("current_thread", thread_id)
     cl.user_session.set("agent", _create_agent())
     cl.user_session.set("last_tool_used", None)
+    print(f"Thread ID: {thread_id}")
 
 
 @cl.on_chat_end
@@ -58,14 +64,12 @@ async def _process_agent_events(data: Any, event: EventMeta) -> None:
     """Process agent events and log appropriately"""
 
     if event.name == "error":
-        await cl.Message(
-            content=f"**Agent Error:** {FrameworkError.ensure(data.error).explain()}"
-        ).send()
+        await cl.Message(content=f"**Error:** {FrameworkError.ensure(data.error).explain()}").send()
     elif event.name == "retry":
         print("Agent is retrying the action...")
     if event.name == "update":
         if data.update.key == "thought":
-            await cl.Message(content=f"**Agent Thought:** {data.update.parsed_value}").send()
+            await cl.Message(content=f"**Thought:** {data.update.parsed_value}").send()
 
         elif data.update.key == "tool_name":
             cl.user_session.set(
