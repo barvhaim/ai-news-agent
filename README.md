@@ -1,6 +1,6 @@
 # AI-News Agent
 
-An AI-powered assistant for discovering the latest AI/ML research papers and interactive demos from Hugging Face.
+An AI-powered assistant for discovering the latest AI/ML news from multiple sources: research papers, interactive demos, tech stories, and academic publications.
 
 ![AI-News Agent Interface](public/main.png)
 
@@ -24,15 +24,17 @@ uv run chainlit run main.py -w
 ### Environment Setup
 Copy `.env.example` to `.env` and configure:
 ```bash
-OPENAI_CHAT_MODEL=gpt-4
+LLM_MODEL_NAME=ollama:llama3.1  # or openai:gpt-4
 OPENAI_API_KEY=your_api_key_here
 OPENAI_API_BASE=https://api.openai.com/v1
 ```
 
 ## Features
 
-- **Trending AI Papers** - Daily trending research from Hugging Face with AI-generated summaries
-- **Popular Spaces** - Interactive demos and applications from the community
+- **Hugging Face Papers** - Daily trending AI/ML research with AI-generated summaries, keywords, and GitHub links
+- **Hugging Face Spaces** - Interactive demos and applications from the community
+- **Hacker News** - Latest AI/ML tech stories filtered from top Hacker News posts
+- **arXiv Papers** - Search or browse recent AI research from arXiv's cs.AI category
 - **Smart Reasoning** - Powered by BeeAI Framework's ReActAgent architecture
 
 ![Example Usage](public/example.png)
